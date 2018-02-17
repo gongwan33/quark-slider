@@ -1,24 +1,46 @@
 <!DOCTYPE html>
 <html>
     <head>
-		<title>Quark Slider</title>
-		<script   src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-		<script type="text/javascript" src="../src/quark-slider.js"></script>
-		<link rel="stylesheet" type="css" href="../src/quark-slider.css"/>
-	</head>
-	<body>
-		<div>
-			<h1>Quark Slider Example</h1>
-		</div>
-		<div>
-			<h2>Slider Style 1</h2>
-		    <div id="slider-1"></div>
-		</div>
-		<hr/>
-		<div>
-			<h2>Slider Style 2</h2>
-		    <div id="slider-2"></div>
-		</div>
-		<hr/>
-	</body>
+        <title>Quark Slider</title>
+        <script   src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="../src/quark-slider.js"></script>
+        <link rel="stylesheet" type="css" href="../src/quark-slider.css"/>
+    </head>
+    <body>
+        <div>
+            <h1>Quark Slider Example</h1>
+        </div>
+        <div>
+            <h2>Slider Style 1</h2>
+            <div id="slider-1" class="slider">
+                <item type="video" src="https://www.youtube.com/embed/GXmcZf8fkAM"></item>
+                <item type="img" src="../resources/1.jpg"></item>
+                <item type="img" src="../resources/2.jpg"></item>
+                <item type="img" src="../resources/3.jpg"></item>
+                <item type="img" src="../resources/4.jpg"></item>
+                <item type="img" src="../resources/5.jpg"></item>
+            </div>
+        </div>
+        <hr/>
+        <div>
+            <h2>Slider Style 2</h2>
+            <div id="slider-2" class="slider"></div>
+        </div>
+        <hr/>
+    
+        <style> 
+            #slider-1 {
+                width: 60%;
+            }
+
+            #slider-2 {
+                width: 60%;
+            }
+        </style>
+        <script type="text/javascript">
+            (function($) {
+                $('.slider').quarkSlider();
+            })(jQuery);
+        </script>
+    </body>
 </html>

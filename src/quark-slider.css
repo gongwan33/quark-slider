@@ -1,0 +1,35 @@
+.quark-sl-m-container {
+	height: 100%;
+	width: 100%;
+}
+
+.quark-sl-m-container .qs-img-window {
+    overflow-x: hidden;
+}
+
+.quark-sl-m-container .scroll-bar {
+    overflow-x: hidden;
+}
+
+.quark-sl-m-container .qs-item {
+    display: inline-block;
+} 
+
+.quark-sl-m-container .qs-scroll {
+    width: 999999px;
+}
+
+.quark-sl-m-container .qs-outer-scroll{
+    height: 70%;
+    margin: 5px 5px 5px 5px;
+}
+
+.quark-sl-m-container .qs-cl-outer-scroll{
+    height: 25%;
+    margin: 0px 5px 5px 5px;
+}
+
+.quark-sl-m-container .qs-cl-outer-scroll .qs-item {
+    min-height: 80px;
+    margin-right: 3px;
+}
