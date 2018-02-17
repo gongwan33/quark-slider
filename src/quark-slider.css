@@ -1,14 +1,91 @@
+@font-face {
+    font-family: "FontAwesome";
+    font-weight: normal;
+    font-style : normal;
+    src : url("https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.eot?v=4.3.0");
+    src : url("https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.eot?#iefix&v=4.3.0") format("embedded-opentype"),
+          url("https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.woff2?v=4.3.0") format("woff2"),
+          url("https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.woff?v=4.3.0") format("woff"),
+          url("https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.ttf?v=4.3.0") format("truetype"),
+          url("https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.svg?v=4.3.0#fontawesomeregular") format("svg");
+}
+
 .quark-sl-m-container {
+    display: block;
 	height: 100%;
+    position: relative;
 	width: 100%;
 }
 
 .quark-sl-m-container .qs-img-window {
+    display: block;
+    height: auto;
     overflow-x: hidden;
+    position: relative;
+}
+
+.quark-sl-m-container .qs-img-window:hover .qs-nav{
+    visibility: visible;
+}
+
+.quark-sl-m-container .scroll-bar:hover .qs-nav{
+    visibility: visible;
+}
+
+.quark-sl-m-container .qs-nav {
+    background-color: black;
+    cursor: pointer;
+    height: 99%;
+    opacity: 0.5;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    visibility: hidden;
+    width: 25px;
+}
+
+.quark-sl-m-container .qs-nav:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    margin-right: -0.25em; 
+}
+
+.quark-sl-m-container .far{
+    font-family: FontAwesome;
+    vertical-align: middle;
+}
+
+.quark-sl-m-container .fa-angle-left:before {
+    color: white;
+    font-family: FontAwesome;
+    font-size: x-large;
+    font-style: normal;
+    content: "\f104";
+}
+
+.quark-sl-m-container .fa-angle-right:before {
+    color: white;
+    font-family: FontAwesome;
+    font-size: x-large;
+    font-style: normal;
+    content: "\f105";
+}
+
+
+.quark-sl-m-container .qs-nav-left {
+
+}
+
+.quark-sl-m-container .qs-nav-right {
+    right: 0;
 }
 
 .quark-sl-m-container .scroll-bar {
+    margin: 5px 0 0 0;
     overflow-x: hidden;
+    position: relative;
 }
 
 .quark-sl-m-container .qs-item {
@@ -20,16 +97,19 @@
 }
 
 .quark-sl-m-container .qs-outer-scroll{
-    height: 70%;
-    margin: 5px 5px 5px 5px;
+    height: 100%;
+    margin: 0px 0px 0px 0px;
 }
 
 .quark-sl-m-container .qs-cl-outer-scroll{
-    height: 25%;
-    margin: 0px 5px 5px 5px;
+    height: 100%;
+    margin: 0px 5px 0px 5px;
 }
 
 .quark-sl-m-container .qs-cl-outer-scroll .qs-item {
-    min-height: 80px;
     margin-right: 3px;
+}
+
+.quark-sl-m-container .qs-cl-outer-scroll .qs-item img {
+    min-height: 80px;
 }

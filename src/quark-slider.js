@@ -5,11 +5,15 @@
                 <div class="qs-outer-scroll qs-scroll">
 
                 </div>
+                <div class="qs-nav qs-nav-left"><i class="far fa-angle-left"></i></div>
+                <div class="qs-nav qs-nav-right"><i class="far fa-angle-right"></i></div>
             </div>
             <div class="scroll-bar">
                 <div class="qs-cl-outer-scroll qs-scroll">
 
                 </div>
+                <div class="qs-nav qs-nav-left"><i class="far fa-angle-left"></i></div>
+                <div class="qs-nav qs-nav-right"><i class="far fa-angle-right"></i></div>
             </div>
         </div>
     `;
@@ -50,12 +54,14 @@
     $.fn.quarkSlider = function(options) {
         var settings = $.extend({
             type: "standard",
-            scrollType: "thumbnail",
             dotBar: "circle",
-            navArrow: "standard",
             lazyload: false,
+            navArrow: "standard",
+            scrollType: "thumbnail",
+            videoRatio: 4/3,
         }, options);
         
+        var instance = this;
         $(this).append(sliderHTMLFrame);
 
         this.each(function(outerIndex, slider) {
@@ -73,23 +79,22 @@
 
                 if(type == 'video') {
                     itemWidth = sliderWidth + 'px';
-                    itemHeight = sliderWidth/4*3 + 'px';
-                    ctrlWidht = sliderWidth/8 + 'px';
-                    ctrlHeight = sliderWidth/10.6 + 'px';
+                    itemHeight = sliderWidth/(settings.videoRatio) + 'px';
+                    ctrlWidth = 'auto';
+                    ctrlHeight = Math.ceil(sliderWidth/10.6) + 'px';
 
                     tVsrc = $(item).attr('vsrc');
-                    console.log(tVsrc);
                     if(tVsrc != null && typeof tVsrc != undefined) {
                         vsrc = tVsrc;
                     }
                 } else {
                     itemWidth = sliderWidth + 'px';
                     itemHeight = 'auto';
-                    ctrlWidht = sliderWidth/8 + 'px';
-                    ctrlHeight = sliderWidth/10.6 + 'px';
+                    ctrlWidth = 'auto';
+                    ctrlHeight = Math.ceil(sliderWidth/10.6) + 'px';
                 }
 
-                $(slider).find('.qs-outer-scroll').append('<div class="qs-item">' + getQSItemTag(type, src, 'main',
+                $(slider).find('.qs-outer-scroll').append('<div type="' + type + '" class="qs-item">' + getQSItemTag(type, src, 'main',
                             {
                                 autoplay: $(item).attr('autoplay'),
                                 height: itemHeight,
@@ -99,7 +104,7 @@
                             }) + '</div>');
 
                 if(settings.scrollType == "thumbnail") {
-                    $(slider).find('.qs-cl-outer-scroll').append('<div class="qs-item">' + getQSItemTag(type, src, 'scroll-bar', 
+                    $(slider).find('.qs-cl-outer-scroll').append('<div type="' + type + '" class="qs-item">' + getQSItemTag(type, src, 'scroll-bar', 
                                 {
                                     autoplay: $(item).attr('autoplay'),
                                     height: ctrlHeight,
@@ -114,6 +119,34 @@
             });
 
         });
-        
+
+        (function(instance) {
+            $(window).on('resize', function(ev) {
+                instance.each(function(outerIndex, slider) {
+                    var sliderWidth = $(slider).find('.quark-sl-m-container').width();
+
+                    $(slider).find('.qs-img-window').find('.qs-item').each(function(index, item) {
+                        var itemHeight = 'auto',
+                            itemWidth = 'auto',
+                            type = $(item).attr('type');
+
+                        if(type == 'video') {
+                            itemWidth = sliderWidth + 'px';
+                            itemHeight = sliderWidth/(settings.videoRatio) + 'px';
+                        } else {
+                            itemWidth = sliderWidth + 'px';
+                            itemHeight = 'auto';
+                        }
+
+                        $(item).width(itemWidth); 
+                        $(item).children().width(itemWidth); 
+                        $(item).height(itemHeight);
+                        $(item).children().height(itemHeight);
+                    });
+
+                });
+            });
+        })(instance);
+
     }
 })(jQuery);
