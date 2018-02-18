@@ -10,6 +10,14 @@
           url("https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.svg?v=4.3.0#fontawesomeregular") format("svg");
 }
 
+.unselectable {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
 .quark-sl-m-container {
     display: block;
 	height: 100%;
@@ -107,9 +115,11 @@
 }
 
 .quark-sl-m-container .qs-cl-outer-scroll .qs-item {
+    cursor: pointer;
     margin-right: 3px;
 }
 
 .quark-sl-m-container .qs-cl-outer-scroll .qs-item img {
     min-height: 80px;
 }
+
