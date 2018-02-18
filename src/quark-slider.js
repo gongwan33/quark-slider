@@ -283,7 +283,7 @@
     function setSliderTimer(slider, settings) {
         (function(slider, settings) {
             window.setInterval(function() {
-                var ev = {target: slider};
+                var ev = {target: $(slider).find('.qs-img-window').find('.qs-item')};
                 slideLeftEvent(ev, settings); 
             }, settings.timer);
         })(slider, settings);
