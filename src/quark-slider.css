@@ -28,7 +28,7 @@
 .quark-sl-m-container .qs-img-window {
     display: block;
     height: auto;
-    overflow-x: hidden;
+    overflow: hidden;
     position: relative;
 }
 
@@ -50,6 +50,7 @@
     top: 0;
     visibility: hidden;
     width: 25px;
+    z-index: 1000;
 }
 
 .quark-sl-m-container .qs-nav:before {
@@ -92,7 +93,7 @@
 
 .quark-sl-m-container .scroll-bar {
     margin: 5px 0 0 0;
-    overflow-x: hidden;
+    overflow: hidden;
     position: relative;
 }
 
@@ -101,6 +102,7 @@
 } 
 
 .quark-sl-m-container .qs-scroll {
+    position: relative;
     width: 999999px;
 }
 
@@ -112,6 +114,10 @@
 .quark-sl-m-container .qs-cl-outer-scroll{
     height: 100%;
     margin: 0px 5px 0px 5px;
+}
+
+.quark-sl-m-container .qs-outer-scroll .qs-item {
+    vertical-align: top;
 }
 
 .quark-sl-m-container .qs-cl-outer-scroll .qs-item {

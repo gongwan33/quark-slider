@@ -95,10 +95,123 @@
         });
     }
 
+    function setSliderData(slider, key, value) {
+        var ele = $(slider).find('.quark-sl-m-container');
+        $(ele).attr(key, value);
+    }
+
+    function getSliderData(slider, key) {
+        var ele = $(slider).find('.quark-sl-m-container');
+        return $(ele).attr(key);
+    }
+
+    function autoFitHeight(curSlider, items, index) {
+        var curItemHeight = $($(items).get(index)).height();
+        $(curSlider).find('.qs-outer-scroll').height(curItemHeight + 'px');
+    }
+
+    function slideLeft(ev, settings) {
+        var curSlider = $(ev.target).closest('.quark-sl-m-container').parent('div');
+        var scroll = $(ev.target).closest('.qs-img-window').find('.qs-outer-scroll');
+        var items = $(ev.target).closest('.qs-img-window').find('.qs-item');
+        var itemNum = items.length;
+
+        if(itemNum <= 1) {
+            return;
+        }
+
+        var curIndex = Number(getSliderData(curSlider, 'curIndex'));
+        var curLeft = Number($(curSlider).find('.qs-outer-scroll').position().left);
+        var curSliderWidth = Number($(curSlider).width());
+
+        if(curIndex >= itemNum - 1) {
+            nextIndex = 0;
+            $($(items).get(nextIndex)).clone().insertAfter($($(items).get(curIndex)));
+        } else {
+            nextIndex = curIndex + 1;
+        }
+
+        if(settings.heightMode == 'auto') {
+            autoFitHeight(curSlider, items, nextIndex);
+        }
+
+        (function(scroll, curLeft, curSliderWidth, items, nextIndex) {
+            $(scroll).animate({
+                left: curLeft + (-curSliderWidth) + 'px',
+            }, settings.duration, function() {
+                if(nextIndex == 0) {
+                    $(scroll).css('left', 0);
+                    $(scroll).find('.qs-item').last().remove();
+                }
+            });
+        })(scroll, curLeft, curSliderWidth, items, nextIndex);
+
+        setSliderData(curSlider, 'curIndex', nextIndex);
+    }
+
+    function slideRight(ev, settings) {
+        var curSlider = $(ev.target).closest('.quark-sl-m-container').parent('div');
+        var scroll = $(ev.target).closest('.qs-img-window').find('.qs-outer-scroll');
+        var items = $(ev.target).closest('.qs-img-window').find('.qs-item');
+        var itemNum = items.length;
+
+        if(itemNum <= 1) {
+            return;
+        }
+
+        var curIndex = Number(getSliderData(curSlider, 'curIndex'));
+        var curLeft = Number($(curSlider).find('.qs-outer-scroll').position().left);
+        var curSliderWidth = Number($(curSlider).width());
+
+        if(curIndex <= 0) {
+            nextIndex = itemNum - 1;
+            $($(items).get(nextIndex)).clone().insertBefore($($(items).get(curIndex)));
+            curLeft = -curSliderWidth;
+            $(scroll).css('left', curLeft + 'px');
+        } else {
+            nextIndex = curIndex - 1;
+        }
+
+        if(settings.heightMode == 'auto') {
+            autoFitHeight(curSlider, items, nextIndex);
+        }
+
+        (function(scroll, curLeft, curSliderWidth, items, itemNum, nextIndex) {
+            $(scroll).animate({
+                left: curLeft + (curSliderWidth) + 'px',
+            }, settings.duration, function() {
+                if(nextIndex == itemNum - 1) {
+                    $(scroll).find('.qs-item').first().remove();
+                    $(scroll).css('left', -$(items).last().position().left + 'px');
+                }
+            });
+        })(scroll, curLeft, curSliderWidth, items, itemNum, nextIndex);
+
+        setSliderData(curSlider, 'curIndex', nextIndex);
+    }
+
+
+    function setSliderClickEvent(slider, settings) {
+        setSliderData(slider, 'curIndex', 0);
+
+        $(slider).find('.qs-img-window').find('.qs-nav-left').off('click');
+        $(slider).find('.qs-img-window').find('.qs-nav-left').on('click', function(ev) {
+            slideLeft(ev, settings);
+        });
+
+        $(slider).find('.qs-img-window').find('.qs-nav-right').off('click');
+        $(slider).find('.qs-img-window').find('.qs-nav-right').on('click', function(ev) {
+            slideRight(ev, settings);
+        });
+
+    }
+
     $.fn.quarkSlider = function(options) {
         var settings = $.extend({
             type: "standard",
             dotBar: "circle",
+            duration: 500,
+            heightMode: 'auto',
             lazyload: false,
             navArrow: "standard",
             ctrlNavArrow: "standard",
@@ -170,6 +283,7 @@
                 $(item).remove();
             });
 
+            setSliderClickEvent(slider, settings);
         });
 
         (function(instance) {
