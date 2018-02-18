@@ -1,4 +1,5 @@
 (function($) {
+    var funcQueue = [];
     var sliderHTMLFrame = `
         <div class="quark-sl-m-container">
             <div class="qs-img-window">
@@ -110,8 +111,37 @@
         $(curSlider).find('.qs-outer-scroll').height(curItemHeight + 'px');
     }
 
+    function pushFuncQueue(func, ev, settings) {
+        var param = {
+            event: ev, 
+            settings: settings,
+        };
+        var ele = {
+            param: param,
+            func: func,
+        }
+        funcQueue.push(ele);
+    }
+
+    function shiftFuncQueue() {
+       return funcQueue.shift();
+    }
+
+    function excuteFuncQueue() {
+        var lock = 'false';
+        while(funcQueue.length > 0 && lock != 'true') {
+            var ele = shiftFuncQueue();
+            ele.func(ele.param.event, ele.param.settings);
+
+            var curSlider = $(ele.param.event.target).closest('.quark-sl-m-container').parent('div');
+            lock = getSliderData(curSlider, 'lock', true);
+        }
+    }
+
     function slideLeft(ev, settings) {
         var curSlider = $(ev.target).closest('.quark-sl-m-container').parent('div');
+        setSliderData(curSlider, 'lock', true);
+
         var scroll = $(ev.target).closest('.qs-img-window').find('.qs-outer-scroll');
         var items = $(ev.target).closest('.qs-img-window').find('.qs-item');
         var itemNum = items.length;
@@ -135,7 +165,7 @@
             autoFitHeight(curSlider, items, nextIndex);
         }
 
-        (function(scroll, curLeft, curSliderWidth, items, nextIndex) {
+        (function(scroll, curLeft, curSliderWidth, items, nextIndex, curSlider) {
             $(scroll).animate({
                 left: curLeft + (-curSliderWidth) + 'px',
             }, settings.duration, function() {
@@ -143,14 +173,18 @@
                     $(scroll).css('left', 0);
                     $(scroll).find('.qs-item').last().remove();
                 }
+                setSliderData(curSlider, 'lock', false);
+                excuteFuncQueue();
             });
-        })(scroll, curLeft, curSliderWidth, items, nextIndex);
+        })(scroll, curLeft, curSliderWidth, items, nextIndex, curSlider);
 
         setSliderData(curSlider, 'curIndex', nextIndex);
     }
 
     function slideRight(ev, settings) {
         var curSlider = $(ev.target).closest('.quark-sl-m-container').parent('div');
+        setSliderData(curSlider, 'lock', true);
+
         var scroll = $(ev.target).closest('.qs-img-window').find('.qs-outer-scroll');
         var items = $(ev.target).closest('.qs-img-window').find('.qs-item');
         var itemNum = items.length;
@@ -176,7 +210,7 @@
             autoFitHeight(curSlider, items, nextIndex);
         }
 
-        (function(scroll, curLeft, curSliderWidth, items, itemNum, nextIndex) {
+        (function(scroll, curLeft, curSliderWidth, items, itemNum, nextIndex, curSlider) {
             $(scroll).animate({
                 left: curLeft + (curSliderWidth) + 'px',
             }, settings.duration, function() {
@@ -184,8 +218,10 @@
                     $(scroll).find('.qs-item').first().remove();
                     $(scroll).css('left', -$(items).last().position().left + 'px');
                 }
+                setSliderData(curSlider, 'lock', false);
+                excuteFuncQueue();
             });
-        })(scroll, curLeft, curSliderWidth, items, itemNum, nextIndex);
+        })(scroll, curLeft, curSliderWidth, items, itemNum, nextIndex, curSlider);
 
         setSliderData(curSlider, 'curIndex', nextIndex);
     }
@@ -196,26 +232,49 @@
 
         $(slider).find('.qs-img-window').find('.qs-nav-left').off('click');
         $(slider).find('.qs-img-window').find('.qs-nav-left').on('click', function(ev) {
-            slideLeft(ev, settings);
+            var curSlider = $(ev.target).closest('.quark-sl-m-container').parent('div');
+            var lock = getSliderData(curSlider, 'lock');
+            if(settings.queueable) {
+                pushFuncQueue(slideLeft, ev, settings);
+                if(lock != 'true') {
+                    excuteFuncQueue();
+                } 
+            } else {
+                if(lock != 'true') {
+                    slideLeft(ev, settings);
+                }
+            }
         });
 
         $(slider).find('.qs-img-window').find('.qs-nav-right').off('click');
         $(slider).find('.qs-img-window').find('.qs-nav-right').on('click', function(ev) {
-            slideRight(ev, settings);
+            var curSlider = $(ev.target).closest('.quark-sl-m-container').parent('div');
+            var lock = getSliderData(curSlider, 'lock');
+            if(settings.queueable) {
+                pushFuncQueue(slideRight, ev, settings);
+                if(lock != 'true') {
+                    excuteFuncQueue();
+                }
+            } else {
+                if(lock != 'true') {
+                    slideRight(ev, settings);
+                }
+            }
         });
 
     }
 
     $.fn.quarkSlider = function(options) {
         var settings = $.extend({
-            type: "standard",
+            ctrlNavArrow: "standard",
             dotBar: "circle",
             duration: 500,
             heightMode: 'auto',
             lazyload: false,
             navArrow: "standard",
-            ctrlNavArrow: "standard",
+            queueable: false,
             scrollType: "thumbnail",
+            type: "standard",
             videoRatio: 4/3,
         }, options);
         
