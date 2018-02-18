@@ -1,5 +1,5 @@
 (function($) {
-    var funcQueue = [];
+    var funcQueue = {};
     var sliderHTMLFrame = `
         <div class="quark-sl-m-container">
             <div class="qs-img-window">
@@ -111,7 +111,7 @@
         $(curSlider).find('.qs-outer-scroll').height(curItemHeight + 'px');
     }
 
-    function pushFuncQueue(func, ev, settings) {
+    function pushFuncQueue(queueName, func, ev, settings) {
         var param = {
             event: ev, 
             settings: settings,
@@ -120,17 +120,26 @@
             param: param,
             func: func,
         }
-        funcQueue.push(ele);
+
+        if(typeof funcQueue.queueName != undefined) {
+            funcQueue.queueName = [];
+        }
+
+        funcQueue.queueName.push(ele);
     }
 
-    function shiftFuncQueue() {
-       return funcQueue.shift();
+    function shiftFuncQueue(queueName) {
+        return funcQueue.queueName.shift();
     }
 
-    function excuteFuncQueue() {
+    function excuteFuncQueue(queueName) {
         var lock = 'false';
-        while(funcQueue.length > 0 && lock != 'true') {
-            var ele = shiftFuncQueue();
+        if(typeof funcQueue.queueName != undefined) {
+            funcQueue.queueName = [];
+        }
+
+        while(funcQueue.queueName.length > 0 && lock != 'true') {
+            var ele = shiftFuncQueue(queueName);
             ele.func(ele.param.event, ele.param.settings);
 
             var curSlider = $(ele.param.event.target).closest('.quark-sl-m-container').parent('div');
@@ -174,7 +183,7 @@
                     $(scroll).find('.qs-item').last().remove();
                 }
                 setSliderData(curSlider, 'lock', false);
-                excuteFuncQueue();
+                excuteFuncQueue($(curSlider).attr('id'));
             });
         })(scroll, curLeft, curSliderWidth, items, nextIndex, curSlider);
 
@@ -219,7 +228,7 @@
                     $(scroll).css('left', -$(items).last().position().left + 'px');
                 }
                 setSliderData(curSlider, 'lock', false);
-                excuteFuncQueue();
+                excuteFuncQueue($(curSlider).attr('id'));
             });
         })(scroll, curLeft, curSliderWidth, items, itemNum, nextIndex, curSlider);
 
@@ -235,9 +244,9 @@
             var curSlider = $(ev.target).closest('.quark-sl-m-container').parent('div');
             var lock = getSliderData(curSlider, 'lock');
             if(settings.queueable) {
-                pushFuncQueue(slideLeft, ev, settings);
+                pushFuncQueue($(curSlider).attr('id'), slideLeft, ev, settings);
                 if(lock != 'true') {
-                    excuteFuncQueue();
+                    excuteFuncQueue($(curSlider).attr('id'));
                 } 
             } else {
                 if(lock != 'true') {
@@ -251,9 +260,9 @@
             var curSlider = $(ev.target).closest('.quark-sl-m-container').parent('div');
             var lock = getSliderData(curSlider, 'lock');
             if(settings.queueable) {
-                pushFuncQueue(slideRight, ev, settings);
+                pushFuncQueue($(curSlider).attr('id'), slideRight, ev, settings);
                 if(lock != 'true') {
-                    excuteFuncQueue();
+                    excuteFuncQueue($(curSlider).attr('id'));
                 }
             } else {
                 if(lock != 'true') {
