@@ -156,6 +156,8 @@
         var itemNum = items.length;
 
         if(itemNum <= 1) {
+            setSliderData(curSlider, 'ctrllock', false);
+            excuteFuncQueue($(curSlider).attr('id'));
             return;
         }
 
@@ -199,6 +201,8 @@
         var itemNum = items.length;
 
         if(itemNum <= 1) {
+            setSliderData(curSlider, 'ctrllock', false);
+            excuteFuncQueue($(curSlider).attr('id'));
             return;
         }
 
@@ -235,56 +239,129 @@
         setSliderData(curSlider, 'curIndex', nextIndex);
     }
 
-    function slideLeftEvent(ev, settings) {
+    function ctrlSlideRight(ev, settings) {
         var curSlider = $(ev.target).closest('.quark-sl-m-container').parent('div');
-        var lock = getSliderData(curSlider, 'lock');
-        if(settings.queueable) {
-            pushFuncQueue($(curSlider).attr('id'), slideLeft, ev, settings);
-            if(lock != 'true') {
-                excuteFuncQueue($(curSlider).attr('id'));
-            } 
-        } else {
-            if(lock != 'true') {
-                slideLeft(ev, settings);
-            }
+        setSliderData(curSlider, 'ctrllock', true);
+
+        var scroll = $(ev.target).closest('.scroll-bar').find('.qs-cl-outer-scroll');
+        var items = $(ev.target).closest('.scroll-bar').find('.qs-item');
+        var itemNum = items.length;
+
+        if(itemNum <= 1) {
+            setSliderData(curSlider, 'ctrllock', false);
+            excuteFuncQueue($(curSlider).attr('id'));
+            return;
         }
+
+        var curIndex = Number(getSliderData(curSlider, 'curCtrlIndex'));
+        var curSliderWidth = Number($(curSlider).find('.scroll-bar').width());
+
+        if(curIndex > 0) {
+            nextIndex = curIndex - 1;
+        } else {
+            setSliderData(curSlider, 'ctrllock', false);
+            excuteFuncQueue($(curSlider).attr('id'));
+            return;
+        }
+
+        var nextLeft = $($(items).get(nextIndex)).position().left;
+
+        (function(scroll, curSliderWidth, items, itemNum, nextIndex, curSlider) {
+            $(scroll).animate({
+                left: -nextLeft + 'px',
+            }, settings.duration/3, function() {
+                setSliderData(curSlider, 'ctrllock', false);
+                excuteFuncQueue($(curSlider).attr('id'));
+            });
+        })(scroll, curSliderWidth, items, itemNum, nextIndex, curSlider);
+
+        setSliderData(curSlider, 'curCtrlIndex', nextIndex);
     }
 
-    function slideRightEvent(ev, settings) {
+    function ctrlSlideLeft(ev, settings) {
         var curSlider = $(ev.target).closest('.quark-sl-m-container').parent('div');
-        var lock = getSliderData(curSlider, 'lock');
+        setSliderData(curSlider, 'ctrllock', true);
+
+        var scroll = $(ev.target).closest('.scroll-bar').find('.qs-cl-outer-scroll');
+        var items = $(ev.target).closest('.scroll-bar').find('.qs-item');
+        var itemNum = items.length;
+
+        if(itemNum <= 1) {
+            setSliderData(curSlider, 'ctrllock', false);
+            excuteFuncQueue($(curSlider).attr('id'));
+            return;
+        }
+
+        var curIndex = Number(getSliderData(curSlider, 'curCtrlIndex'));
+        var curSliderWidth = Number($(curSlider).find('.scroll-bar').width());
+
+        if(curIndex < itemNum - 1) {
+            nextIndex = curIndex + 1;
+        } else {
+            setSliderData(curSlider, 'ctrllock', false);
+            excuteFuncQueue($(curSlider).attr('id'));
+            return;
+        }
+
+        var nextLeft = $($(items).get(nextIndex)).position().left;
+
+        (function(scroll, curSliderWidth, items, itemNum, nextIndex, curSlider) {
+            $(scroll).animate({
+                left: -nextLeft + 'px',
+            }, settings.duration/3, function() {
+                setSliderData(curSlider, 'ctrllock', false);
+                excuteFuncQueue($(curSlider).attr('id'));
+            });
+        })(scroll, curSliderWidth, items, itemNum, nextIndex, curSlider);
+
+        setSliderData(curSlider, 'curCtrlIndex', nextIndex);
+    }
+
+    function slideEvent(func, lockname, ev, settings) {
+        var curSlider = $(ev.target).closest('.quark-sl-m-container').parent('div');
+        var lock = getSliderData(curSlider, lockname);
         if(settings.queueable) {
-            pushFuncQueue($(curSlider).attr('id'), slideRight, ev, settings);
+            pushFuncQueue($(curSlider).attr('id'), func, ev, settings);
             if(lock != 'true') {
                 excuteFuncQueue($(curSlider).attr('id'));
             }
         } else {
             if(lock != 'true') {
-                slideRight(ev, settings);
+                func(ev, settings);
             }
         }
     }
 
     function setSliderClickEvent(slider, settings) {
         setSliderData(slider, 'curIndex', 0);
+        setSliderData(slider, 'curCtrlIndex', 0);
 
         $(slider).find('.qs-img-window').find('.qs-nav-left').off('click');
         $(slider).find('.qs-img-window').find('.qs-nav-left').on('click', function(ev) {
-            slideLeftEvent(ev, settings); 
+            slideEvent(slideLeft, 'lock', ev, settings);
         });
 
         $(slider).find('.qs-img-window').find('.qs-nav-right').off('click');
         $(slider).find('.qs-img-window').find('.qs-nav-right').on('click', function(ev) {
-            slideRightEvent(ev, settings);
+            slideEvent(slideRight, 'lock', ev, settings);
         });
 
+        $(slider).find('.scroll-bar').find('.qs-nav-right').off('click');
+        $(slider).find('.scroll-bar').find('.qs-nav-right').on('click', function(ev) {
+            slideEvent(ctrlSlideRight, 'ctrllock', ev, settings);
+        });
+
+        $(slider).find('.scroll-bar').find('.qs-nav-left').off('click');
+        $(slider).find('.scroll-bar').find('.qs-nav-left').on('click', function(ev) {
+            slideEvent(ctrlSlideLeft, 'ctrllock', ev, settings);
+        });
     }
 
     function setSliderTimer(slider, settings) {
         (function(slider, settings) {
             window.setInterval(function() {
                 var ev = {target: $(slider).find('.qs-img-window').find('.qs-item')};
-                slideLeftEvent(ev, settings); 
+                slideEvent(slideLeft, 'lock', ev, settings);
             }, settings.timer);
         })(slider, settings);
     }

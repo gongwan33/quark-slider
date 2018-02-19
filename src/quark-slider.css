@@ -74,6 +74,10 @@
     content: "\f104";
 }
 
+.quark-sl-m-container .scroll-bar .fa-angle-left:before {
+    color: gray;
+}
+
 .quark-sl-m-container .fa-angle-right:before {
     color: white;
     font-family: FontAwesome;
@@ -82,6 +86,9 @@
     content: "\f105";
 }
 
+.quark-sl-m-container .scroll-bar .fa-angle-right:before {
+    color: gray;
+}
 
 .quark-sl-m-container .qs-nav-left {
 
