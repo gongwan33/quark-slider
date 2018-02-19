@@ -163,6 +163,22 @@
         if(nextIndex != null) {
             $(items).css('border', 'unset'); 
             $($(items).get(nextIndex)).css('border', 'solid 2px ' + settings.scrollChosenColor);
+
+            var selLeft = $($(items).get(nextIndex)).position().left;
+            var scroll = $(curSlider).find('.qs-cl-outer-scroll');
+            var scrollLeft = $(scroll).position().left;
+            var scrollbarWidth = $(curSlider).find('.scroll-bar').width();
+            var itemWidth = $($(items).get(nextIndex)).width();
+
+            if(-scrollLeft > selLeft) {
+                $(scroll).animate({
+                    left: 0
+                }, settings.duration/3);
+            } else if(selLeft + itemWidth > -scrollLeft + scrollbarWidth) {
+                $(scroll).animate({
+                    left: -selLeft + 'px'
+                }, settings.duration/3);
+            }
         }
 
         if(nextIndex != null) {
