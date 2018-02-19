@@ -77,6 +77,7 @@
         }
 
         var sliderScrollLeft = Math.abs($(slider).find('.qs-outer-scroll').position().left);
+        var ratio = 1;
         $(slider).find('.qs-img-window').find('.qs-item').each(function(index, item) {
             var itemHeight = 'auto',
             itemWidth = 'auto',
@@ -89,16 +90,18 @@
                 itemHeight = 'auto';
             }
 
-            var ratio = $(item).width()/sliderWidth;
+            ratio = $(item).width()/sliderWidth;
 
             $(item).width(itemWidth); 
             $(item).children().width(itemWidth); 
             $(item).height(itemHeight);
             $(item).children().height(itemHeight);
 
-            $(slider).find('.qs-outer-scroll').css('left', -(sliderScrollLeft/ratio) + 'px');
-            $(slider).find('.qs-outer-scroll').height($(item).height() + 'px');
         });
+
+        var curIndex = Number(getSliderData(slider, 'curIndex'));
+        $(slider).find('.qs-outer-scroll').css('left', -(sliderScrollLeft/ratio) + 'px');
+        autoFitHeight(slider, $(slider).find('.qs-img-window').find('.qs-item'), curIndex);
     }
 
     function setSliderData(slider, key, value) {
@@ -233,6 +236,8 @@
                 if(nextIndex == 0) {
                     $(scroll).css('left', 0);
                     $(scroll).find('.qs-item').last().remove();
+                } else {
+                    $(scroll).css('left', -$($(scroll).find('.qs-item').get(nextIndex)).position().left + 'px');
                 }
                 scrollbarRefresh(ev, settings, nextIndex);
                 setSliderData(curSlider, 'lock', false);
@@ -287,6 +292,8 @@
                 if(nextIndex == itemNum - 1) {
                     $(scroll).find('.qs-item').first().remove();
                     $(scroll).css('left', -$(items).last().position().left + 'px');
+                } else {
+                    $(scroll).css('left', -$($(scroll).find('.qs-item').get(nextIndex)).position().left + 'px');
                 }
                 scrollbarRefresh(ev, settings, nextIndex);
                 setSliderData(curSlider, 'lock', false);
