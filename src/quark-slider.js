@@ -147,6 +147,45 @@
         }
     }
 
+    function scrollbarRefresh(ev, settings, nextIndex = null, ctrlNextIndex = null) {
+        var items = $(ev.target).closest('.quark-sl-m-container').find('.scroll-bar').find('.qs-item');
+        var itemNum = $(items).length;
+        var curSlider = $(ev.target).closest('.quark-sl-m-container').parent('div');
+
+        if(nextIndex != null) {
+            $(items).css('border', 'unset'); 
+            $($(items).get(nextIndex)).css('border', 'solid 2px ' + settings.scrollChosenColor);
+        }
+
+        if(nextIndex != null) {
+            if(settings.loop == false &&  nextIndex == 0) {
+                $(curSlider).find('.qs-img-window .qs-nav-right').hide();
+            } else {
+                $(curSlider).find('.qs-img-window .qs-nav-right').show();
+            }
+
+            if(settings.loop == false &&  nextIndex >= itemNum - 1) {
+                $(curSlider).find('.qs-img-window .qs-nav-left').hide();
+            } else {
+                $(curSlider).find('.qs-img-window .qs-nav-left').show();
+            }
+        }
+
+        if(ctrlNextIndex != null) {
+            if(ctrlNextIndex >= itemNum - 1) {
+                $(curSlider).find('.scroll-bar .qs-nav-left').hide();
+            } else {
+                $(curSlider).find('.scroll-bar .qs-nav-left').show();
+            }
+
+            if(ctrlNextIndex == 0) {
+                $(curSlider).find('.scroll-bar .qs-nav-right').hide();
+            } else {
+                $(curSlider).find('.scroll-bar .qs-nav-right').show();
+            }
+        }
+    }
+
     function slideLeft(ev, settings) {
         var curSlider = $(ev.target).closest('.quark-sl-m-container').parent('div');
         setSliderData(curSlider, 'lock', true);
@@ -156,7 +195,7 @@
         var itemNum = items.length;
 
         if(itemNum <= 1) {
-            setSliderData(curSlider, 'ctrllock', false);
+            setSliderData(curSlider, 'lock', false);
             excuteFuncQueue($(curSlider).attr('id'));
             return;
         }
@@ -166,8 +205,14 @@
         var curSliderWidth = Number($(curSlider).width());
 
         if(curIndex >= itemNum - 1) {
-            nextIndex = 0;
-            $($(items).get(nextIndex)).clone().insertAfter($($(items).get(curIndex)));
+            if(settings.loop) {
+                nextIndex = 0;
+                $($(items).get(nextIndex)).clone().insertAfter($($(items).get(curIndex)));
+            } else {
+                setSliderData(curSlider, 'lock', false);
+                excuteFuncQueue($(curSlider).attr('id'));
+                return;
+            }
         } else {
             nextIndex = curIndex + 1;
         }
@@ -184,6 +229,7 @@
                     $(scroll).css('left', 0);
                     $(scroll).find('.qs-item').last().remove();
                 }
+                scrollbarRefresh(ev, settings, nextIndex);
                 setSliderData(curSlider, 'lock', false);
                 excuteFuncQueue($(curSlider).attr('id'));
             });
@@ -201,7 +247,7 @@
         var itemNum = items.length;
 
         if(itemNum <= 1) {
-            setSliderData(curSlider, 'ctrllock', false);
+            setSliderData(curSlider, 'lock', false);
             excuteFuncQueue($(curSlider).attr('id'));
             return;
         }
@@ -211,10 +257,16 @@
         var curSliderWidth = Number($(curSlider).width());
 
         if(curIndex <= 0) {
-            nextIndex = itemNum - 1;
-            $($(items).get(nextIndex)).clone().insertBefore($($(items).get(curIndex)));
-            curLeft = -curSliderWidth;
-            $(scroll).css('left', curLeft + 'px');
+            if(settings.loop) {
+                nextIndex = itemNum - 1;
+                $($(items).get(nextIndex)).clone().insertBefore($($(items).get(curIndex)));
+                curLeft = -curSliderWidth;
+                $(scroll).css('left', curLeft + 'px');
+            } else {
+                setSliderData(curSlider, 'lock', false);
+                excuteFuncQueue($(curSlider).attr('id'));
+                return;
+            }
         } else {
             nextIndex = curIndex - 1;
         }
@@ -231,6 +283,7 @@
                     $(scroll).find('.qs-item').first().remove();
                     $(scroll).css('left', -$(items).last().position().left + 'px');
                 }
+                scrollbarRefresh(ev, settings, nextIndex);
                 setSliderData(curSlider, 'lock', false);
                 excuteFuncQueue($(curSlider).attr('id'));
             });
@@ -270,6 +323,7 @@
             $(scroll).animate({
                 left: -nextLeft + 'px',
             }, settings.duration/3, function() {
+                scrollbarRefresh(ev, settings, null, nextIndex);
                 setSliderData(curSlider, 'ctrllock', false);
                 excuteFuncQueue($(curSlider).attr('id'));
             });
@@ -309,6 +363,7 @@
             $(scroll).animate({
                 left: -nextLeft + 'px',
             }, settings.duration/3, function() {
+                scrollbarRefresh(ev, settings, null, nextIndex);
                 setSliderData(curSlider, 'ctrllock', false);
                 excuteFuncQueue($(curSlider).attr('id'));
             });
@@ -373,8 +428,10 @@
             duration: 500,
             heightMode: 'auto',
             lazyload: false,
+            loop: true,
             navArrow: "standard",
             queueable: false,
+            scrollChosenColor: 'blue',
             scrollType: "thumbnail",
             timer: 0,
             type: "standard",
@@ -444,6 +501,17 @@
 
                 $(item).remove();
             });
+
+            if($(slider).find('.qs-outer-scroll .qs-item').length <= 1) {
+                $(slider).find('.qs-nav').remove();
+            }
+            $(slider).find('.qs-cl-outer-scroll .qs-item').first().css('border', 'solid 2px ' + settings.scrollChosenColor);
+
+            if(!settings.loop) {
+                $(slider).find('.qs-img-window .qs-nav-right').hide();
+            }
+
+            $(slider).find('.scroll-bar .qs-nav-right').hide();
 
             setSliderClickEvent(slider, settings);
 
