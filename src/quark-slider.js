@@ -195,18 +195,16 @@
             }
         }
 
-        if(ctrlNextIndex != null) {
-            if(ctrlNextIndex >= itemNum - 1) {
-                $(curSlider).find('.scroll-bar .qs-nav-left').hide();
-            } else {
-                $(curSlider).find('.scroll-bar .qs-nav-left').show();
-            }
+        if(ctrlNextIndex >= itemNum - 1) {
+            $(curSlider).find('.scroll-bar .qs-nav-left').hide();
+        } else {
+            $(curSlider).find('.scroll-bar .qs-nav-left').show();
+        }
 
-            if(ctrlNextIndex == 0) {
-                $(curSlider).find('.scroll-bar .qs-nav-right').hide();
-            } else {
-                $(curSlider).find('.scroll-bar .qs-nav-right').show();
-            }
+        if(ctrlNextIndex == 0) {
+            $(curSlider).find('.scroll-bar .qs-nav-right').hide();
+        } else {
+            $(curSlider).find('.scroll-bar .qs-nav-right').show();
         }
     }
 
@@ -248,7 +246,7 @@
         (function(scroll, curLeft, curSliderWidth, items, nextIndex, curSlider) {
             $(scroll).animate({
                 left: curLeft + (-curSliderWidth) + 'px',
-            }, settings.duration, function() {
+            }, settings.duration, settings.ease, function() {
                 if(nextIndex == 0) {
                     $(scroll).css('left', 0);
                     $(scroll).find('.qs-item').last().remove();
@@ -304,7 +302,7 @@
         (function(scroll, curLeft, curSliderWidth, items, itemNum, nextIndex, curSlider) {
             $(scroll).animate({
                 left: curLeft + (curSliderWidth) + 'px',
-            }, settings.duration, function() {
+            }, settings.duration, settings.ease, function() {
                 if(nextIndex == itemNum - 1) {
                     $(scroll).find('.qs-item').first().remove();
                     $(scroll).css('left', -$(items).last().position().left + 'px');
@@ -421,6 +419,7 @@
 
         dupSettings.duration = dupSettings.duration/Math.abs(deltaIndex);
         dupSettings.queueable = true;
+        dupSettings.ease = 'linear';
 
         if(deltaIndex > 0) {
             for(i = 0; i < deltaIndex; i++) {
@@ -480,6 +479,7 @@
             ctrlNavArrow: "standard",
             dotBar: "circle",
             duration: 500,
+            ease: 'swing',
             heightMode: 'auto',
             lazyload: false,
             loop: true,
