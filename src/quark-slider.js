@@ -174,10 +174,12 @@
                 $(scroll).animate({
                     left: -selLeft + 'px'
                 }, settings.duration/3);
+                setSliderData(curSlider, 'curCtrlIndex', nextIndex);
             } else if(selLeft + itemWidth > -scrollLeft + scrollbarWidth) {
                 $(scroll).animate({
                     left: -selLeft + 'px'
                 }, settings.duration/3);
+                setSliderData(curSlider, 'curCtrlIndex', nextIndex);
             }
         }
 
