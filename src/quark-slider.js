@@ -504,6 +504,10 @@
             setNavArrowStyle('qs-img-window', settings.navArrow, slider);
             setNavArrowStyle('scroll-bar', settings.ctrlNavArrow, slider);
 
+            $(slider).on('dragstart', function() {
+                return false;
+            });
+
             items.each(function(index, item) {
                 var type = $(item).attr('type'),
                     src = $(item).attr('src'),

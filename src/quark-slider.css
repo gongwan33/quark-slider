@@ -43,7 +43,7 @@
 .quark-sl-m-container .qs-nav {
     background-color: black;
     cursor: pointer;
-    height: 99%;
+    height: 100%;
     opacity: 0.5;
     position: absolute;
     text-align: center;
@@ -57,6 +57,7 @@
     content: '';
     display: inline-block;
     height: 100%;
+    line-height: 0;
     vertical-align: middle;
     margin-right: -0.25em; 
 }
@@ -106,6 +107,7 @@
 
 .quark-sl-m-container .qs-item {
     display: inline-block;
+    line-height: 0;
 } 
 
 .quark-sl-m-container .qs-scroll {
@@ -120,7 +122,7 @@
 
 .quark-sl-m-container .qs-cl-outer-scroll{
     height: 100%;
-    margin: 0px 5px 0px 5px;
+    margin: 0px 5px 0px 0px;
 }
 
 .quark-sl-m-container .qs-outer-scroll .qs-item {
