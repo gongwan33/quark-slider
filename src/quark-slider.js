@@ -1,9 +1,6 @@
 (function($) {
     var funcQueue = {};
-    var sliderContext = {};
-
-    var autoTimer = null;
-    var videoPollerTimer = null;
+    var sliderContexts = {};
 
     var sliderHTMLFrame = `
         <div class="quark-sl-m-container">
@@ -243,14 +240,20 @@
     function listenVideoStatus(item) {
         var type = $(item).attr('type');
         var vsrc = $(item).attr('vsrc');
+        var slider = $(item).closest('.quark-sl-m-container').parent();
 
         if(type == 'video') {
             if(typeof vsrc == 'undefined' || vsrc == 'youtube') {
                 (function() {
-                    videoPollerTimer = window.setInterval(function() {
+                    if(typeof sliderContexts[$(slider).attr('id')] == 'undefined') {
+                        sliderContexts[$(slider).attr('id')] = {};
+                    }
+
+                    sliderContexts[$(slider).attr('id')].videoPollerTimer = window.setInterval(function() {
                         var iframe = ($(item).find('iframe').get(0)).contentWindow;
                         iframe.postMessage(JSON.stringify({
                             "event": "listening",
+                            "id": $(slider).attr('id'),
                         }), "*");               
                     }, 800);
                 })(item);
@@ -519,17 +522,24 @@
         $(window).off('message');
         $(window).on('message', function(ev) {
             var ev = ev.originalEvent;
-            if(videoPollerTimer != null) {
-                clearInterval(videoPollerTimer);
-                videoPollerTimer = null;
-            } 
-
             if(ev.data != null && typeof ev.data != 'undefined') {
                 var data = JSON.parse(ev.data);
-                console.log(data);
+                var contextId = data.id;
+
+                if(typeof sliderContexts[contextId] == 'undefined') {
+                    sliderContexts[contextId] = {};
+                }
+
+                var timer = sliderContexts[contextId].videoPollerTimer;
+
+                if(timer != null && typeof timer != 'undefined') {
+                    clearInterval(timer);
+                    sliderContexts[contextId].videoPollerTimer = null;
+                } 
+
                 if(data.event == 'infoDelivery') {
                     if(data.info.playerState == 1 || data.info.playerState == 3) {
-                        clearTimer = autoTimer;
+                        clearInterval(sliderContexts[contextId].autoTimer);
                     }
                 }
             }
@@ -538,10 +548,15 @@
 
     function setSliderTimer(slider, settings) {
         (function(slider, settings) {
-            autoTimer = window.setInterval(function() {
+            timer = window.setInterval(function() {
                 var ev = {target: $(slider).find('.qs-img-window').find('.qs-item')};
                 slideEvent(slideLeft, 'lock', ev, settings);
             }, settings.timer);
+
+            if(typeof sliderContexts[$(slider).attr('id')] == 'undefined') {
+                sliderContexts[$(slider).attr('id')] = {};
+            }
+            sliderContexts[$(slider).attr('id')].autoTimer = timer; 
         })(slider, settings);
     }
 
