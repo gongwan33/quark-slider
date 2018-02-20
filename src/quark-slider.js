@@ -172,7 +172,7 @@
 
             if(-scrollLeft > selLeft) {
                 $(scroll).animate({
-                    left: 0
+                    left: -selLeft + 'px'
                 }, settings.duration/3);
             } else if(selLeft + itemWidth > -scrollLeft + scrollbarWidth) {
                 $(scroll).animate({
@@ -214,8 +214,8 @@
         var curSlider = $(ev.target).closest('.quark-sl-m-container').parent('div');
         setSliderData(curSlider, 'lock', true);
 
-        var scroll = $(ev.target).closest('.qs-img-window').find('.qs-outer-scroll');
-        var items = $(ev.target).closest('.qs-img-window').find('.qs-item');
+        var scroll = $(curSlider).find('.qs-img-window').find('.qs-outer-scroll');
+        var items = $(curSlider).find('.qs-img-window').find('.qs-item');
         var itemNum = items.length;
 
         if(itemNum <= 1) {
@@ -268,8 +268,8 @@
         var curSlider = $(ev.target).closest('.quark-sl-m-container').parent('div');
         setSliderData(curSlider, 'lock', true);
 
-        var scroll = $(ev.target).closest('.qs-img-window').find('.qs-outer-scroll');
-        var items = $(ev.target).closest('.qs-img-window').find('.qs-item');
+        var scroll = $(curSlider).find('.qs-img-window').find('.qs-outer-scroll');
+        var items = $(curSlider).find('.qs-img-window').find('.qs-item');
         var itemNum = items.length;
 
         if(itemNum <= 1) {
@@ -324,8 +324,8 @@
         var curSlider = $(ev.target).closest('.quark-sl-m-container').parent('div');
         setSliderData(curSlider, 'ctrllock', true);
 
-        var scroll = $(ev.target).closest('.scroll-bar').find('.qs-cl-outer-scroll');
-        var items = $(ev.target).closest('.scroll-bar').find('.qs-item');
+        var scroll = $(curSlider).find('.scroll-bar').find('.qs-cl-outer-scroll');
+        var items = $(curSlider).find('.scroll-bar').find('.qs-item');
         var itemNum = items.length;
 
         if(itemNum <= 1) {
@@ -364,8 +364,8 @@
         var curSlider = $(ev.target).closest('.quark-sl-m-container').parent('div');
         setSliderData(curSlider, 'ctrllock', true);
 
-        var scroll = $(ev.target).closest('.scroll-bar').find('.qs-cl-outer-scroll');
-        var items = $(ev.target).closest('.scroll-bar').find('.qs-item');
+        var scroll = $(curSlider).find('.scroll-bar').find('.qs-cl-outer-scroll');
+        var items = $(curSlider).find('.scroll-bar').find('.qs-item');
         var itemNum = items.length;
 
         if(itemNum <= 1) {
@@ -415,6 +415,24 @@
         }
     }
 
+    function slideToIndex(curIndex, tarIndex, ev, settings) {
+        var deltaIndex = tarIndex - curIndex;
+        var dupSettings = Object.assign({}, settings); 
+
+        dupSettings.duration = dupSettings.duration/Math.abs(deltaIndex);
+        dupSettings.queueable = true;
+
+        if(deltaIndex > 0) {
+            for(i = 0; i < deltaIndex; i++) {
+                slideEvent(slideLeft, 'lock', ev, dupSettings);
+            }
+        } else if(deltaIndex < 0) {
+            for(i = 0; i < -deltaIndex; i++) {
+                slideEvent(slideRight, 'lock', ev, dupSettings);
+            }
+        }
+    }
+
     function setSliderClickEvent(slider, settings) {
         setSliderData(slider, 'curIndex', 0);
         setSliderData(slider, 'curCtrlIndex', 0);
@@ -437,6 +455,14 @@
         $(slider).find('.scroll-bar').find('.qs-nav-left').off('click');
         $(slider).find('.scroll-bar').find('.qs-nav-left').on('click', function(ev) {
             slideEvent(ctrlSlideLeft, 'ctrllock', ev, settings);
+        });
+
+        $(slider).find('.scroll-bar').find('.qs-item').off('click');
+        $(slider).find('.scroll-bar').find('.qs-item').on('click', function(ev) {
+            var curIndex = $(ev.target).closest('.quark-sl-m-container').attr('curIndex');
+            var tarIndex = $(ev.target).closest('.scroll-bar').find('.qs-item').index($(ev.target).closest('.qs-item'));
+
+            slideToIndex(curIndex, tarIndex, ev, settings);
         });
     }
 
